@@ -62,6 +62,7 @@ pipeline {
                         echo "Deploying ${BRANCH_NAME} onto ${LAMBDA}"
                         AWS("s3 cp ${env.ZIP_USER_LOGIN} s3://${BUCKET}")
                         AWS("s3 cp ${env.ZIP_USER_GETROLE} s3://${BUCKET}")
+                        AWS("s3 cp ${env.ZIP_USER_REGISTER} s3://${BUCKET}")
                         AWS("lambda update-function-code --function-name ${LAMBDA} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_LOGIN} --region ${AWS_DEFAULT_REGION}")
                         AWS("lambda update-function-code --function-name ${LAMBDA2} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_GETROLE} --region ${AWS_DEFAULT_REGION}")
                         AWS("lambda update-function-code --function-name ${LAMBDA3} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_REGISTER} --region ${AWS_DEFAULT_REGION}")
