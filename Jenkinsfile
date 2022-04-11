@@ -34,7 +34,7 @@ pipeline {
                     zip archive: true, dir: "UserService/Login", overwrite: true, zipFile: "${env.ZIP_USER_LOGIN}"
                     zip archive: true, dir: "UserService/GetRole", overwrite: true, zipFile: "${env.ZIP_USER_GETROLE}"
                     zip archive: true, dir: "UserService/Register", overwrite: true, zipFile: "${env.ZIP_USER_REGISTER}"
-                    zip archive: true, dir: "UserService/VerifyUser", overwrite: true, zipFile: "${env.ZIP_USER_VERIFY}"
+                    zip archive: true, dir: "UserService/Update", overwrite: true, zipFile: "${env.ZIP_USER_UPDATE}"
 
                     echo "SearchService"
                     echo "Misc"
