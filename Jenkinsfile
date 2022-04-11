@@ -8,10 +8,10 @@ pipeline {
     environment{
         AWS_DEFAULT_REGION="us-west-2"
         AWS_CREDENTIALS=credentials('AWS-hootel-dev')
-        ZIP_USER_LOGIN="UserService-Login.zip"
-        ZIP_USER_REGISTER="UserService-Register.zip"
-        ZIP_USER_GETROLE="UserService-GetRole.zip"
-        ZIP_USER_UPDATE="UserService-Update.zip"
+        ZIP_USER_LOGIN="Vet-UserService-Login.zip"
+        ZIP_USER_REGISTER="Vet-UserService-Register.zip"
+        ZIP_USER_GETROLE="Vet-UserService-GetRole.zip"
+        ZIP_USER_UPDATE="Vet-UserService-Update.zip"
     }
 
     // Different pipeline stages
@@ -31,10 +31,10 @@ pipeline {
                     echo "Building ${BRANCH_NAME}"
 
                     echo "UserService"
-                    zip archive: true, dir: "backend/UserService/Login", overwrite: true, zipFile: "${env.ZIP_USER_LOGIN}"
-                    zip archive: true, dir: "backend/UserService/GetRole", overwrite: true, zipFile: "${env.ZIP_USER_GETROLE}"
-                    zip archive: true, dir: "backend/UserService/Register", overwrite: true, zipFile: "${env.ZIP_USER_REGISTER}"
-                    zip archive: true, dir: "backend/UserService/VerifyUser", overwrite: true, zipFile: "${env.ZIP_USER_VERIFY}"
+                    zip archive: true, dir: "UserService/Login", overwrite: true, zipFile: "${env.ZIP_USER_LOGIN}"
+                    zip archive: true, dir: "UserService/GetRole", overwrite: true, zipFile: "${env.ZIP_USER_GETROLE}"
+                    zip archive: true, dir: "UserService/Register", overwrite: true, zipFile: "${env.ZIP_USER_REGISTER}"
+                    zip archive: true, dir: "UserService/VerifyUser", overwrite: true, zipFile: "${env.ZIP_USER_VERIFY}"
 
                     echo "SearchService"
                     echo "Misc"
