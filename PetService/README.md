@@ -1,4 +1,4 @@
-[Endpoint](https://2va96t2eh7.execute-api.us-west-2.amazonaws.com/dev)
+[Endpoint](https://wmn3ujkw87.execute-api.us-west-2.amazonaws.com/dev)
 
 # Register Pet endpoint (POST) /pet-register
 - Requires body only (all fields required)
