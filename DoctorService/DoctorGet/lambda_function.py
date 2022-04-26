@@ -39,7 +39,7 @@ def lambda_handler(event, context):
         if (user == None and doctor == None):
             return returnResponse(400, {'message': 'User does not exist'})
         return returnResponse(200, {'message': 'Retrieved Doctor',
-                            'doctor': doctor.toDict(),
+                            'doctor': doctor.toJson(),
                             'user': {
                                 'userId': user['userId'],
                                 'email': user['email'],
