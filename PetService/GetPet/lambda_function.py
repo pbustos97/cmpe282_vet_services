@@ -3,6 +3,7 @@ import logging
 import boto3
 import os
 from Pet import Pet
+from User import User
 from botocore.exceptions import ClientError
 
 # from dotenv import load_dotenv
@@ -27,27 +28,83 @@ def lambda_handler(event, context):
     if 'userId' not in eventBody: 
         return returnResponse(400, {'message': 'Invalid input, no user',
                                      'status': 'error'})
+    user = getUser(eventBody['userId'])
+    if user == None:
+        return returnResponse(400, {'message': 'Invalid userId, user does not exist',
+                                     'status': 'error'})
+
     if 'petId' not in eventBody:
         return returnResponse(400, {'message': 'Invalid input, no pet',
                                      'status': 'error'})
+    if eventBody['petId'] == '-1':
+        pets = getAllPets(eventBody['userId'])
+        if pets == None:
+            return returnResponse(400, {'message': 'Invalid userId, no pets',
+                                         'status': 'error'})
+        return returnResponse(200, {'message': 'All pets',
+                                     'status': 'success',
+                                     'pets': pets})
 
-    # Remove keys and regions when done
+    pet = getPet(eventBody['petId'], eventBody['userId'])
+    if pet == None:
+        return returnResponse(400, {'message': 'Invalid petId, pet does not exist',
+                                     'status': 'error'})
+
+    return returnResponse(200, {'pet': pet.toJson(), 'status': 'success'})
+
+def getUser(userId):
+    logger.debug('[USER] userId: {}'.format(userId))
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(os.environ['TABLE_USER'])
+    try:
+        response = table.get_item(
+            Key={
+                'userId': userId
+            }
+        )
+        if 'Item' not in response:
+            return None
+        item = response['Item']
+        logger.debug('[USER] item: {}'.format(item))
+        user = User(item['userId'], [item['firstName'], item['lastName']], item['email'], item['Address'], item['Country'], item['UserRoles'])
+        return user
+    except ClientError as e:
+        logger.error(e.response['Error']['Message'])
+        raise e
+
+def getPet(petId, ownerId):
+    logger.debug('[PET] petId: {}'.format(petId))
     dynamodb = boto3.resource('dynamodb', region_name=os.environ['AWS_REGION'])
-    userTable = dynamodb.Table(os.environ['TABLE_USER'])
+    userTable = dynamodb.Table(os.environ['TABLE_PET'])
     try:
         item = userTable.get_item(
-            TableName=os.environ['TABLE_USER'],
+            TableName=os.environ['TABLE_PET'],
             Key={
-                'userId': eventBody['userId'],
-                'petId': eventBody['petId']
+                'userId': ownerId,
+                'petId': petId
             }
         )
         if 'Item' not in item:
-            return returnResponse(400, {'message': 'Invalid userId, user does not exist', 'status': 'error'})
-        p = Pet(item['Item']['name'], item['Item']['age'], item['Item']['ownerId'], item['Item']['petId'], item['Item']['breed'], item['Item']['species'], item['Item']['weight'])
+            return None
+        return Pet(item['Item']['PetName'], item['Item']['PetAge'], item['Item']['userId'], item['Item']['petId'], item['Item']['PetBreed'], item['Item']['PetSpecies'], item['Item']['PetWeight'])
     except ClientError as e:
-        return returnResponse(400, e.response['Error']['Message'])
-    return returnResponse(200, {'pet': p.toJson(), 'status': 'success'})
+        logger.error(e.response['Error']['Message'])
+        raise e
+    
+def getAllPets(ownerId):
+    logger.debug('[PET] ownerId: {}'.format(ownerId))
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(os.environ['TABLE_PET'])
+    try:
+        item = table.scan(
+            ProjectionExpression = "userId, petId"
+        )
+        if 'Items' not in item:
+            return None
+        return item['Items']
+    except ClientError as e:
+        logger.error(e.response['Error']['Message'])
+        raise e
 
 def returnResponse(statusCode, body):
     logger.debug('[RESPONSE] statusCode: {} body: {}'.format(statusCode, body))

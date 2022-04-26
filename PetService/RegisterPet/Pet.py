@@ -20,7 +20,7 @@ class Pet:
 
     def toDict(self):
         return {'petId': self.petId,
-            'ownerId': self.ownerId,
+            'userId': self.ownerId,
             'PetName': self.name,
             'PetAge': self.age,
             'PetBreed': self.breed,

@@ -8,7 +8,7 @@ class Pet:
         self.species = species
         self.weight = weight
 
-    def toDict(self):
+    def toJson(self):
         return {'name': self.name,
                 'age': self.age,
                 'ownerId': self.ownerId,
@@ -17,3 +17,13 @@ class Pet:
                 'species': self.species,
                 'weight': self.weight
             }
+
+    def toDict(self):
+        return {'petId': self.petId,
+            'userId': self.ownerId,
+            'PetName': self.name,
+            'PetAge': self.age,
+            'PetBreed': self.breed,
+            'PetSpecies': self.species,
+            'PetWeight': self.weight
+        }

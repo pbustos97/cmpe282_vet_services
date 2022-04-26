@@ -28,7 +28,7 @@ def lambda_handler(event, context):
         logger.debug('[EVENT] eventBody: {}'.format(eventBody))
     
     if 'pet' not in eventBody: 
-        return returnResponse(400, {'message': 'Invalid input, no user',
+        return returnResponse(400, {'message': 'Invalid input, no pet object',
                                     'status': 'error'})
     eventBody = eventBody['pet']
     if type(eventBody) == str:
@@ -43,6 +43,10 @@ def lambda_handler(event, context):
                                     'status': 'error'})
     if 'ownerId' not in eventBody:
         return returnResponse(400, {'message': 'Invalid input, no ownerId',
+                                    'status': 'error'})
+    owner = getUser(eventBody['ownerId'])
+    if owner == None:
+        return returnResponse(400, {'message': 'Invalid ownerId, user does not exist',
                                     'status': 'error'})
     if 'petId' not in eventBody:
         return returnResponse(400, {'message': 'Invalid input, no petId',
@@ -64,12 +68,33 @@ def lambda_handler(event, context):
         logger.error(e.response['Error']['Message'])
         return returnResponse(500, {'message': 'Error uploading pet', "status": "error", "error": e.response['Error']['Message']})
     
-    return returnResponse(200, {'message': 'User created',
+    return returnResponse(200, {'message': 'Pet registered',
                                 'pet': pet.toDict(),
                                 'status': 'success'})
 
+def getUser(userId):
+    logger.debug('[USER] userId: {}'.format(userId))
+    dynamodb = boto3.resource('dynamodb')
+    table = dynamodb.Table(os.environ['TABLE_USER'])
+    try:
+        response = table.get_item(
+            Key={
+                'userId': userId
+            }
+        )
+        if 'Item' not in response:
+            return None
+        item = response['Item']
+        logger.debug('[USER] item: {}'.format(item))
+        user = User(item['userId'], [item['firstName'], item['lastName']], item['email'], item['Address'], item['Country'], item['UserRoles'])
+        return user
+    except ClientError as e:
+        logger.error(e.response['Error']['Message'])
+        raise e
+    
+
 def uploadPet(pet):
-    logger.debug('[UPLOAD] user: {}'.format(json.dumps(pet.toJson())))
+    logger.debug('[UPLOAD] pet: {}'.format(json.dumps(pet.toJson())))
     dynamodb = boto3.resource('dynamodb')
     table = dynamodb.Table(os.environ['DYNAMODB_TABLE'])
     try:
