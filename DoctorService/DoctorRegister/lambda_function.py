@@ -32,8 +32,6 @@ def lambda_handler(event, context):
         return returnResponse(400, {'message': 'Invalid input, no doctorId'})
     if 'email' not in eventBody['doctor']:
         return returnResponse(400, {'message': 'Invalid input, no email'})
-    if 'clinicId' not in eventBody['doctor']:
-        return returnResponse(400, {'message': 'Invalid input, no clinicId'})
     if 'speciality' not in eventBody['doctor']:
         speciality = 'General'
     elif len(eventBody['doctor']['speciality']) == 0:
@@ -41,7 +39,7 @@ def lambda_handler(event, context):
     else:
         speciality = eventBody['doctor']['speciality']
 
-    doctor = Doctor(eventBody['doctor']['doctorId'], eventBody['doctor']['email'], eventBody['doctor']['clinicId'], speciality)
+    doctor = Doctor(eventBody['doctor']['doctorId'], eventBody['doctor']['email'], speciality)
     try:
         if (getDoctor(doctor.doctorId) != None):
             return returnResponse(400, {'message': 'Doctor already exists'})
