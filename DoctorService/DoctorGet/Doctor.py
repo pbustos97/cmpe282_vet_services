@@ -7,7 +7,7 @@ class Doctor:
 
     def toDict(self):
         return {
-            'userId': self.doctorId,
+            'docterId': self.doctorId,
             'email': self.email,
             'ClinicId': self.clinicId,
             'Speciality': self.speciality

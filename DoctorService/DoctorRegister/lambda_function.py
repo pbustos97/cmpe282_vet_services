@@ -71,7 +71,7 @@ def getDoctor(doctorId):
     try:
         response = table.get_item(
             Key={
-                'userId': doctorId
+                'docterId': doctorId
             }
         )
     except ClientError as e:
