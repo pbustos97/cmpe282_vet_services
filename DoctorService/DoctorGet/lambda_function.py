@@ -32,7 +32,7 @@ def lambda_handler(event, context):
         doctor = getDoctor(doctorId)
         if (doctor == None):
             return returnResponse(400, {'message': 'Doctor does not exist'})
-        doctor = Doctor(doctor['doctorId'], doctor['email'], doctor['ClinicId'], doctor['Speciality'])
+        doctor = Doctor(doctor['docterId'], doctor['email'], doctor['ClinicId'], doctor['Speciality'])
         user = getUser(doctorId)
         if (user != None and doctor == None):
             return returnResponse(400, {'message': 'User is not a doctor'})
