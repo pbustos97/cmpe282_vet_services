@@ -16,6 +16,8 @@ pipeline {
         ZIP_DOC_GET="Vet-DocService-GetDoc.zip"
         ZIP_PET_REGISTER="Vet-PetService-Register.zip"
         ZIP_PET_GET="Vet-PetService-GetPet.zip"
+        ZIP_CLINIC_REGISTER="Vet-Clinic-Register.zip"
+        ZIP_CLINIC_GET="Vet-Clinic-Get.zip"
     }
 
     // Different pipeline stages
@@ -45,6 +47,9 @@ pipeline {
                     echo "PetService"
                     zip archive: true, dir: "PetService/RegisterPet", overwrite: true, zipFile: "${env.ZIP_PET_REGISTER}"
                     zip archive: true, dir: "PetService/GetPet", overwrite: true, zipFile: "${env.ZIP_PET_GET}"
+                    echo "ClinicService"
+                    zip archive: true, dir: "ClinicService/ClinicRegister", overwrite: true, zipFile: "${env.ZIP_CLINIC_REGISTER}"
+                    zip archive: true, dir: "ClinicService/ClinicGet", overwrite: true, zipFile: "${env.ZIP_CLINIC_GET}"
                     echo "Misc"
                 }
             }
@@ -56,13 +61,15 @@ pipeline {
                 script {
                     withCredentials([
                         string(credentialsId: 'vet-cicd-bucket', variable: 'BUCKET'), 
-                        string(credentialsId: 'vet-dev-lambda-UserLogin', variable: 'LAMBDA'),
-                        string(credentialsId: 'vet-dev-lambda-UserGetRole', variable: 'LAMBDA2'),
-                        string(credentialsId: 'vet-dev-lambda-UserRegister', variable: 'LAMBDA3'),
-                        string(credentialsId: 'vet-dev-lambda-DocGet', variable: 'LAMBDA4'),
-                        string(credentialsId: 'vet-dev-lambda-DocRegister', variable: 'LAMBDA5'),
-                        string(credentialsId: 'vet-dev-lambda-PetGet', variable: 'LAMBDA6'),
-                        string(credentialsId: 'vet-dev-lambda-PetRegister', variable: 'LAMBDA7'),
+                        string(credentialsId: 'vet-dev-lambda-UserLogin', variable: 'USER_LOGIN'),
+                        string(credentialsId: 'vet-dev-lambda-UserGetRole', variable: 'USER_GET'),
+                        string(credentialsId: 'vet-dev-lambda-UserRegister', variable: 'USER_REGISTER'),
+                        string(credentialsId: 'vet-dev-lambda-DocGet', variable: 'DOC_GET'),
+                        string(credentialsId: 'vet-dev-lambda-DocRegister', variable: 'DOC_REGISTER'),
+                        string(credentialsId: 'vet-dev-lambda-PetGet', variable: 'PET_GET'),
+                        string(credentialsId: 'vet-dev-lambda-PetRegister', variable: 'PET_REGISTER'),
+                        string(credentialsId: 'vet-dev-lambda-ClinicGet', variable: 'CLINIC_GET'),
+                        string(credentialsId: 'vet-dev-lambda-ClinicRegister', variable: 'CLINIC_REGISTER'),
                         [
                             $class: 'AmazonWebServicesCredentialsBinding',
                             credentialsId: "AWS-hootel-dev",
@@ -79,13 +86,15 @@ pipeline {
                         AWS("s3 cp ${env.ZIP_DOC_REGISTER} s3://${BUCKET}")
                         AWS("s3 cp ${env.ZIP_PET_GET} s3://${BUCKET}")
                         AWS("s3 cp ${env.ZIP_PET_REGISTER} s3://${BUCKET}")
-                        AWS("lambda update-function-code --function-name ${LAMBDA} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_LOGIN} --region ${AWS_DEFAULT_REGION}")
-                        AWS("lambda update-function-code --function-name ${LAMBDA2} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_GETROLE} --region ${AWS_DEFAULT_REGION}")
-                        AWS("lambda update-function-code --function-name ${LAMBDA3} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_REGISTER} --region ${AWS_DEFAULT_REGION}")
-                        AWS("lambda update-function-code --function-name ${LAMBDA4} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_DOC_GET} --region ${AWS_DEFAULT_REGION}")
-                        AWS("lambda update-function-code --function-name ${LAMBDA5} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_DOC_REGISTER} --region ${AWS_DEFAULT_REGION}")
-                        AWS("lambda update-function-code --function-name ${LAMBDA6} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_PET_GET} --region ${AWS_DEFAULT_REGION}")
-                        AWS("lambda update-function-code --function-name ${LAMBDA7} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_PET_REGISTER} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${USER_LOGIN} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_LOGIN} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${USER_GET} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_GETROLE} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${USER_REGISTER} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_USER_REGISTER} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${DOC_GET} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_DOC_GET} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${DOC_REGISTER} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_DOC_REGISTER} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${PET_GET} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_PET_GET} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${PET_REGISTER} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_PET_REGISTER} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${CLINIC_GET} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_CLINIC_GET} --region ${AWS_DEFAULT_REGION}")
+                        AWS("lambda update-function-code --function-name ${CLINIC_REGISTER} --s3-bucket ${BUCKET} --s3-key ${env.ZIP_CLINIC_REGISTER} --region ${AWS_DEFAULT_REGION}")
                     }
                 }
             }
